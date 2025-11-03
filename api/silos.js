@@ -126,6 +126,11 @@ export default async function handler(req, res) {
   }
   try {
     const rows = await fetchLastRows(SILO_NAMES.length);
+    // modo diagnóstico: devolver filas crudas
+    if (req.query && (req.query.raw === '1' || req.query.raw === 'true')) {
+      res.status(200).json({ rowsCount: rows.length, rows });
+      return;
+    }
     const silos = mapRowsToSilos(rows);
     res.status(200).json(silos);
   } catch (err) {
