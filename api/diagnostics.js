@@ -4,9 +4,10 @@ export default async function handler(req, res) {
   try {
     const SUPABASE_URL = process.env.SUPABASE_URL;
     const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY;
-    const READINGS_TABLE = process.env.READINGS_TABLE || 'readings';
-    const ORDER_COL = process.env.READINGS_ORDER_COLUMN || 'created_at';
-    const HUM_FIELD = process.env.READINGS_HUMIDITY_FIELD || 'moisture';
+  // Hardcode activado para facilitar la verificación
+  const READINGS_TABLE = 'readings';
+  const ORDER_COL = 'created_at';
+  const HUM_FIELD = 'moisture';
 
     const envOk = Boolean(SUPABASE_URL && SUPABASE_KEY);
     if (!envOk) {

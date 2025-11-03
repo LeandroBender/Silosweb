@@ -3,11 +3,13 @@ import { createClient } from '@supabase/supabase-js';
 const SILO_NAMES = Array.from({ length: 8 }, (_, i) => `Silo ${i + 1}`);
 const nameKeys = ['silo', 'name', 'sensor', 'device', 'silo_name'];
 
-const READINGS_TABLE = process.env.READINGS_TABLE || 'readings';
-const READINGS_ORDER_COLUMN = process.env.READINGS_ORDER_COLUMN || 'created_at';
-const READINGS_HUMIDITY_FIELD = process.env.READINGS_HUMIDITY_FIELD || 'moisture';
-const READINGS_TIMESTAMP_FIELD = process.env.READINGS_TIMESTAMP_FIELD || 'created_at';
-const API_DEBUG = process.env.API_DEBUG === '1';
+// Hardcode activado: usamos nombres fijos de tabla/columnas
+const READINGS_TABLE = 'readings';
+const READINGS_ORDER_COLUMN = 'created_at';
+const READINGS_HUMIDITY_FIELD = 'moisture';
+const READINGS_TIMESTAMP_FIELD = 'created_at';
+// Activar debug por defecto (puedes desactivar con API_DEBUG=0)
+const API_DEBUG = (process.env.API_DEBUG ?? '1') === '1';
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY;

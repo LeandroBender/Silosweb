@@ -9,9 +9,10 @@ export default async function handler(req, res) {
       return;
     }
 
-    const TABLE = process.env.READINGS_TABLE || 'readings';
-    const ORDER_COL = process.env.READINGS_ORDER_COLUMN || 'created_at';
-    const HUM_FIELD = process.env.READINGS_HUMIDITY_FIELD || 'moisture';
+  // Hardcode activado para simplificar
+  const TABLE = 'readings';
+  const ORDER_COL = 'created_at';
+  const HUM_FIELD = 'moisture';
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
     let data = null, error = null;
