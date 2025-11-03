@@ -1,0 +1,10 @@
+Flask==2.3.3
+
+# Cliente oficial de Supabase para Python
+supabase==2.4.0
+
+# Cargar variables de entorno desde .env
+python-dotenv==1.0.1
+
+# util para producción si se desea
+# gunicorn==20.1.0

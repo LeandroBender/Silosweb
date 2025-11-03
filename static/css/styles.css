@@ -1,0 +1,68 @@
+:root{
+  --bg: #f6f5f1;
+  --card-radius: 12px;
+  --soft-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  --green: #4CAF50;
+  --yellow: #FFC107;
+  --red: #F44336;
+  --accent: #2196F3;
+}
+body{background:var(--bg);font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;color:#222}
+header{background:transparent}
+.card-silo{border-radius:var(--card-radius);box-shadow:var(--soft-shadow);padding:16px;background:white}
+.silo-name{font-weight:600}
+.silo-value{font-size:1.05rem;font-weight:700}
+.silo-meta{color:#666;font-size:.9rem}
+.status-dot{display:inline-block;width:12px;height:12px;border-radius:999px;margin-right:8px}
+.drying-icon{width:22px;height:22px;display:inline-block;vertical-align:middle}
+.spinner{animation:spin 1s linear infinite}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+/* Responsive grid tweaks */
+@media (min-width: 1200px){
+  .col-silo{flex:0 0 25%;max-width:25%}
+}
+@media (min-width: 768px) and (max-width:1199px){
+  .col-silo{flex:0 0 33.333%;max-width:33.333%}
+}
+@media (max-width:767px){
+  .col-silo{flex:0 0 100%;max-width:100%}
+}
+
+.card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.level-bar{height:8px;border-radius:8px;background:#eee;overflow:hidden}
+.level-fill{height:100%;background:linear-gradient(90deg,var(--accent),#6ec6ff);}
+
+/* Sidebar layout */
+.app-shell{display:flex;min-height:100vh}
+.sidebar{width:260px;background:#1E1E2F;color:#E0E0E0;padding:20px;flex-shrink:0}
+.sidebar-header h2{color:#fff;font-size:1.1rem;margin-bottom:18px}
+.sidebar .nav-link{color:#cfd3e0;padding:10px 12px;border-radius:8px;margin-bottom:6px;display:flex;align-items:center}
+.sidebar .nav-link:hover{background:rgba(255,255,255,0.04);color:#fff;text-decoration:none}
+.sidebar .nav-link.active{background:linear-gradient(90deg,#2b2b44,#232336);box-shadow:0 6px 18px rgba(0,0,0,0.4)}
+.main-content{flex:1;background:transparent}
+
+/* Silos list */
+.silo-row{display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:10px;background:white;margin-bottom:8px;box-shadow:var(--soft-shadow)}
+.silo-info{display:flex;gap:12px;align-items:center}
+.silo-meta-compact{color:#666;font-size:.9rem}
+.state-btn{border-radius:8px;padding:6px 8px;border:none}
+.state-active{background:var(--green);color:white}
+.state-maint{background:var(--yellow);color:#222}
+.state-inact{background:var(--red);color:white}
+
+/* Alerts */
+.alert-item{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:8px;margin-bottom:8px}
+.alert-critical{background:rgba(244,67,54,0.08);border-left:4px solid var(--red)}
+.alert-warning{background:rgba(255,193,7,0.06);border-left:4px solid var(--yellow)}
+.alert-normal{background:rgba(76,175,80,0.06);border-left:4px solid var(--green)}
+
+/* responsive */
+@media (max-width: 900px){
+  .sidebar{width:72px;padding:12px}
+  .sidebar-header h2{display:none}
+  .nav-link span.me-2{display:none}
+}
+
+/* History */
+.history-card{background:white;border-radius:12px;padding:12px;box-shadow:var(--soft-shadow)}
+.stat-pill{background:#fff;border-radius:8px;padding:10px}
