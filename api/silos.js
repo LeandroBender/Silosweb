@@ -128,12 +128,21 @@ export default async function handler(req, res) {
   }
   try {
     const rows = await fetchLastRows(SILO_NAMES.length);
+    if (API_DEBUG) {
+      const sample = rows && rows.length ? rows[0] : {};
+      const latestHum = sample ? sample[READINGS_HUMIDITY_FIELD] : undefined;
+      const latestTs  = sample ? sample[READINGS_TIMESTAMP_FIELD] || sample[READINGS_ORDER_COLUMN] : undefined;
+      console.log(`[api/silos] fetched rows=${rows.length}; latest -> id=${sample?.id ?? 'n/a'} ${READINGS_HUMIDITY_FIELD}=${latestHum} ${READINGS_TIMESTAMP_FIELD||READINGS_ORDER_COLUMN}=${latestTs}`);
+    }
     // modo diagnóstico: devolver filas crudas
     if (req.query && (req.query.raw === '1' || req.query.raw === 'true')) {
       res.status(200).json({ rowsCount: rows.length, rows });
       return;
     }
     const silos = mapRowsToSilos(rows);
+    if (API_DEBUG) {
+      console.log('[api/silos] response preview:', silos.slice(0,3).map(s=>({name:s.name, humidity:s.humidity, last_update:s.last_update})));
+    }
     res.status(200).json(silos);
   } catch (err) {
     // fallback a datos deterministas si hay error de Supabase
