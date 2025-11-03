@@ -128,7 +128,7 @@ def get_silos_state():
                     ts = assigned.get(READINGS_TIMESTAMP_FIELD) or assigned.get('timestamp') or assigned.get('created_at')
                     if ts:
                         _state[i]['last_update'] = str(ts)
-    except Exception:
+    except Exception as e:
         # si hay error (credenciales, RLS, red), dejamos los valores tal cual
         if SUPABASE_DEBUG:
             print("[SUPABASE] Error consultando lecturas:", repr(e))

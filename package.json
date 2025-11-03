@@ -1,0 +1,11 @@
+{
+  "name": "silosweb",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Vercel serverless functions for Silosweb",
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0"
+  }
+}
