@@ -90,6 +90,8 @@ function mapRowsToSilos(rows) {
       }
     }
     if (!assigned && i < rows.length) assigned = rows[i];
+    // si sólo hay una lectura (o pocas) y no hay mapeo, usar la más reciente para todos
+    if (!assigned && rows.length) assigned = rows[0];
 
     const humidityRaw = assigned ? (
       assigned[READINGS_HUMIDITY_FIELD]
