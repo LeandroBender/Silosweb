@@ -7,6 +7,7 @@ const READINGS_TABLE = process.env.READINGS_TABLE || 'readings';
 const READINGS_ORDER_COLUMN = process.env.READINGS_ORDER_COLUMN || 'created_at';
 const READINGS_HUMIDITY_FIELD = process.env.READINGS_HUMIDITY_FIELD || 'moisture';
 const READINGS_TIMESTAMP_FIELD = process.env.READINGS_TIMESTAMP_FIELD || 'created_at';
+const API_DEBUG = process.env.API_DEBUG === '1';
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY;
@@ -18,13 +19,58 @@ if (SUPABASE_URL && SUPABASE_KEY) {
 
 async function fetchLastRows(limit) {
   if (!supabase) return [];
-  const { data, error } = await supabase
-    .from(READINGS_TABLE)
-    .select('*')
-    .order(READINGS_ORDER_COLUMN, { ascending: false })
-    .limit(limit);
-  if (error) throw error;
-  return data || [];
+  const orderCandidates = [
+    READINGS_ORDER_COLUMN,
+    'timestamp',
+    'created_at',
+    'time',
+    'ts',
+    'inserted_at',
+    'id'
+  ].filter((v, i, arr) => v && arr.indexOf(v) === i);
+
+  for (const col of orderCandidates) {
+    try {
+      const { data, error } = await supabase
+        .from(READINGS_TABLE)
+        .select('*')
+        .order(col, { ascending: false })
+        .limit(limit);
+      if (error) throw error;
+      if (API_DEBUG) console.log(`[api/silos] got ${data?.length || 0} rows ordered by ${col}`);
+      // If we got any rows, return immediately
+      if (data && data.length) return data;
+      // keep trying next column if empty (could be RLS though)
+    } catch (e) {
+      if (API_DEBUG) console.log(`[api/silos] order by '${col}' failed`, String(e));
+      // try next candidate
+    }
+  }
+  // final fallback without explicit order (returns provider default)
+  try {
+    const { data, error } = await supabase
+      .from(READINGS_TABLE)
+      .select('*')
+      .limit(limit);
+    if (error) throw error;
+    if (API_DEBUG) console.log(`[api/silos] fallback rows without order: ${data?.length || 0}`);
+    return data || [];
+  } catch (e) {
+    if (API_DEBUG) console.log('[api/silos] fallback query failed', String(e));
+    return [];
+  }
+}
+
+function parseHumidity(val) {
+  if (val == null) return null;
+  if (typeof val === 'string') {
+    const cleaned = val.replace('%', '').trim();
+    const n = Number(cleaned);
+    if (!Number.isNaN(n)) return n;
+    return null;
+  }
+  if (typeof val === 'number') return val;
+  return null;
 }
 
 function mapRowsToSilos(rows) {
@@ -46,9 +92,17 @@ function mapRowsToSilos(rows) {
     if (!assigned && i < rows.length) assigned = rows[i];
 
     const humidityRaw = assigned ? (
-      assigned[READINGS_HUMIDITY_FIELD] ?? assigned.moisture ?? assigned.humidity ?? assigned.humedad ?? assigned.value ?? assigned.hum ?? assigned.hum_perc
+      assigned[READINGS_HUMIDITY_FIELD]
+      ?? assigned.moisture
+      ?? assigned.humidity
+      ?? assigned.humedad
+      ?? assigned.value
+      ?? assigned.hum
+      ?? assigned.hum_perc
+      ?? assigned.moisture_perc
     ) : null;
-    const h = Math.max(0, Number.isFinite(Number(humidityRaw)) ? Number(humidityRaw) : 0);
+    const parsed = parseHumidity(humidityRaw);
+    const h = Math.max(0, Number.isFinite(Number(parsed)) ? Number(parsed) : 0);
     const ts = assigned ? (assigned[READINGS_TIMESTAMP_FIELD] || assigned.timestamp || assigned.created_at) : new Date().toISOString();
 
     return {
@@ -76,6 +130,7 @@ export default async function handler(req, res) {
     res.status(200).json(silos);
   } catch (err) {
     // fallback a datos deterministas si hay error de Supabase
+    if (API_DEBUG) console.log('[api/silos] error', String(err));
     const silos = mapRowsToSilos([]);
     res.status(200).json(silos);
   }
